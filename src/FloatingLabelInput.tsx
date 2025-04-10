@@ -1,38 +1,33 @@
-import React, { useState } from 'react';
-import { TextInput, Animated, View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  TextInput,
+  Animated,
+  View,
+  StyleSheet,
+  TextInputProps,
+} from 'react-native';
 
-interface FloatingLabelInputProps {
+interface FloatingLabelInputProps extends TextInputProps {
   label: string;
-  value: string;
-  onChangeText: (text: string) => void;
 }
 
 const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   label,
   value,
-  onChangeText,
+  autoFocus,
+  ...props
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const labelPosition = new Animated.Value(value ? 1 : 0);
+  const labelPosition = useRef(
+    new Animated.Value(value || autoFocus ? 1 : 0)
+  ).current;
+  const [isFocused, setIsFocused] = useState(autoFocus || false);
 
-  const handleFocus = () => {
-    setIsFocused(true);
+  const animateLabel = (toValue: number) => {
     Animated.timing(labelPosition, {
-      toValue: 1,
+      toValue,
       duration: 200,
       useNativeDriver: false,
     }).start();
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    if (!value) {
-      Animated.timing(labelPosition, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: false,
-      }).start();
-    }
   };
 
   return (
@@ -43,11 +38,7 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
           {
             top: labelPosition.interpolate({
               inputRange: [0, 1],
-              outputRange: [22, 6],
-            }),
-            fontSize: labelPosition.interpolate({
-              inputRange: [0, 1],
-              outputRange: [16, 12],
+              outputRange: [22, 3],
             }),
           },
         ]}
@@ -55,24 +46,35 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         {label}
       </Animated.Text>
       <TextInput
+        {...props}
         style={styles.input}
         value={value}
-        onChangeText={onChangeText}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
+        onFocus={() => animateLabel(1)}
+        onBlur={() => !value && animateLabel(0)}
+        autoFocus={autoFocus}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { position: 'relative', marginVertical: 12 },
-  label: { position: 'absolute', left: 8, color: '#999' },
+  container: {
+    position: 'relative',
+  },
+  label: {
+    position: 'absolute',
+    left: 6,
+    color: '#343a40',
+    fontWeight: 600,
+    fontSize: 16,
+  },
   input: {
     borderBottomWidth: 1,
     borderColor: '#ccc',
     paddingTop: 20,
+
     fontSize: 16,
+    paddingLeft: 6,
   },
 });
 
