@@ -5,22 +5,36 @@ import {
   View,
   StyleSheet,
   TextInputProps,
+  KeyboardTypeOptions,
 } from 'react-native';
 
 interface FloatingLabelInputProps extends TextInputProps {
-  label: string;
+  label?: string;
+  labelColor?: string;
+  editable?: boolean;
+  borderColor?: string;
+  inputFontSize?: number;
+  labelFontSize?: number;
+  multiline?: boolean;
+  keyboardType?: KeyboardTypeOptions;
 }
 
 const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   label,
   value,
+  keyboardType,
+  multiline = false,
+  labelFontSize = 16,
+  inputFontSize = 14,
   autoFocus,
+  borderColor = '#212529',
+  labelColor = '#212529',
+  editable = true,
   ...props
 }) => {
   const labelPosition = useRef(
     new Animated.Value(value || autoFocus ? 1 : 0)
   ).current;
-  const [isFocused, setIsFocused] = useState(autoFocus || false);
 
   const animateLabel = (toValue: number) => {
     Animated.timing(labelPosition, {
@@ -36,9 +50,11 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         style={[
           styles.label,
           {
+            fontSize: labelFontSize,
+            color: labelColor,
             top: labelPosition.interpolate({
               inputRange: [0, 1],
-              outputRange: [22, 3],
+              outputRange: [22, 1],
             }),
           },
         ]}
@@ -46,8 +62,14 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         {label}
       </Animated.Text>
       <TextInput
+        keyboardType={keyboardType}
+        multiline={multiline}
+        editable={editable}
         {...props}
-        style={styles.input}
+        style={[
+          styles.input,
+          { borderColor: borderColor, fontSize: inputFontSize },
+        ]}
         value={value}
         onFocus={() => animateLabel(1)}
         onBlur={() => !value && animateLabel(0)}
@@ -64,16 +86,14 @@ const styles = StyleSheet.create({
   label: {
     position: 'absolute',
     left: 6,
-    color: '#343a40',
+    color: '#212529',
     fontWeight: 600,
     fontSize: 16,
   },
   input: {
     borderBottomWidth: 1,
-    borderColor: '#ccc',
     paddingTop: 20,
-
-    fontSize: 16,
+    paddingBottom: 6,
     paddingLeft: 6,
   },
 });
