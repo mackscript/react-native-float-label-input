@@ -1,0 +1,7 @@
+example/
+node_modules/
+.gitignore
+*.log
+babel.config.js
+metro.config.js
+tsconfig.json
