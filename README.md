@@ -2,6 +2,8 @@
 
 A customizable React Native input component with a floating label animation.
 
+![Floating Label Input](https://raw.githubusercontent.com/mackscript/react-native-float-label-input/src/floating-label-input.gif)
+
 ## Installation
 
 ```sh
