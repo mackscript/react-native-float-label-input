@@ -1,6 +1,6 @@
 {
   "name": "@mackscript/react-native-float-label-input",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "main": "index.ts",
   "repository": {
     "type": "git",
